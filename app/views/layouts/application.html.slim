@@ -1,0 +1,11 @@
+doctype html
+html
+  head
+    title Crypt
+    = stylesheet_link_tag    'application', media: 'all'
+    = csrf_meta_tags
+  body
+    = yield
+
+    script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"
+    = javascript_include_tag 'application'
