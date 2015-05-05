@@ -55,20 +55,25 @@ cryptApp.controller('CryptCtrl', ['$scope', '$location', 'Message', function($sc
   if(window.message_id) {
     $scope.angular_loaded = false; // Wait untill message successfully loads
 
+    // Set passphrase if it is coming through in the location hash
+    if (location.hash) {
+      $scope.app_data.passphrase = decodeURI(location.hash.replace(/^#/, ''));
+    };
+
     // Query the api for the message with the given message id
     $scope.message = Message.get({id: window.message_id}, function() {
       // On success
       $scope.angular_loaded = true;
+
+      // Try to decrypt text if passphrase is already available
+      if ($scope.app_data.passphrase) {
+        $scope.decryptText();
+      }
     }, function() {
       // On error redirect to root url
       alert('This message no longer exists');
       window.location = '/'; // I actually want to force a page reload, otherwise I would use $location.path()
     });
-
-    // Set passphrase if it is coming through in the location hash
-    if (location.hash) {
-      $scope.app_data.passphrase = decodeURI(location.hash.replace(/^#/, ''));
-    };
 
   } else {
     // Create a new message object and generate a passphrase
