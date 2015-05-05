@@ -1,5 +1,7 @@
 class Message < ActiveRecord::Base
 
+  scope :expired, -> { where("expire_count <= 0 OR expire_at < ?", Time.now) }
+
   before_save :set_default_expire_values
 
   def is_still_valid?
@@ -19,7 +21,7 @@ class Message < ActiveRecord::Base
   private
 
   def set_default_expire_values
-    self.expire_count ||= 0
-    self.expire_at ||= 30.days.from_now
+    self.expire_count ||= 1
+    self.expire_at ||= 7.days.from_now
   end
 end
