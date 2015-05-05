@@ -39,14 +39,22 @@
 
     / Show this if you arrived through the message url
     div ng-if="!newly_created"
-      .form-group
-        label Passphrase
-        input.form-control type="text" ng-model="app_data.passphrase"
+      div ng-if="!app_data.decrypted_text"
+        .form-group
+          label Passphrase
+          input.form-control type="text" ng-model="app_data.passphrase"
 
-      hr
+        hr
 
-      div ng-if="!app_data.decrypted_text && app_data.passphrase"
-        .btn.btn-primary ng-click="decryptText()" Use passphrase to decrypt text
+        div ng-if="app_data.passphrase"
+          .btn.btn-primary ng-click="decryptText()" Use passphrase to decrypt text
+          div ng-if="decryption_error"
+            br
+            br
+            p.alert.alert-danger = "{{decryption_error}}"
+
       div ng-if="app_data.decrypted_text"
         h4 Decrypted Text
         pre = "{{app_data.decrypted_text}}"
+        hr
+        .btn.btn-danger ng-click="destroyMessage()" Permanently Delete Message

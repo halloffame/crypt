@@ -42,7 +42,7 @@ cryptApp.config([
 
 // Setup Message factory for creating and finding messages
 cryptApp.factory('Message', function($resource) {
-  return $resource('/api/messages/:id');
+  return $resource('/api/messages/:id', {id: '@id'});
 });
 
 cryptApp.controller('CryptCtrl', ['$scope', '$location', 'Message', function($scope, $location, Message) {
@@ -95,8 +95,21 @@ cryptApp.controller('CryptCtrl', ['$scope', '$location', 'Message', function($sc
   // Gets triggered when you click the "Decrypt" button on the message page
   $scope.decryptText = function(){
     _scope.app_data.decrypted_text = CryptoJS.AES.decrypt(_scope.message.encrypted_text, _scope.app_data.passphrase).toString(CryptoJS.enc.Utf8);
-    // TODO: Do something if password is wrong, right now it just doesn't do anything.
+
+    // Show error if password is wrong.
+    if (!_scope.app_data.decrypted_text) {
+      _scope.decryption_error = "The passphrase is incorrect"
+    }
   };
+
+  $scope.destroyMessage = function() {
+    _scope.message.$delete(function() {
+      $scope.angular_loaded = false; // Blank out the screen before reload
+      window.location = '/';
+    }, function() {
+      alert("There was a problem deleting the message");
+    });
+  }
 
   $scope.uriEncodedPassphrase = function() {
     return encodeURI(_scope.app_data.passphrase);
