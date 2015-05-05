@@ -16,3 +16,12 @@
 
 @import "bootstrap-sprockets";
 @import "bootstrap";
+
+
+#cryptApp {
+  display: none;
+
+  &.angular_loaded {
+    display: block;
+  }
+}

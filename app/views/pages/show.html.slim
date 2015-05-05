@@ -2,7 +2,7 @@
   javascript:
     window.message_id = "#{params[:id]}";
 
-.container ng-app="cryptApp" ng-controller="CryptCtrl"
+#cryptApp.container ng-app="cryptApp" ng-controller="CryptCtrl" ng-class="{angular_loaded: angular_loaded}"
 
   h1 Message Crypt
   p Simple and secure message encryption.
@@ -28,19 +28,17 @@
   div ng-if="message.id"
     span<> Here is the link to share:
     pre = "http://crypt.dev/message/{{message.id}}"
-    / a ng-href="/message/{{message.id}}" = "http://crypt.dev/message/{{message.id}}"
+    div
+      a ng-href="/message/{{message.id}}" = "http://crypt.dev/message/{{message.id}}"
 
     .form-group
       label Passphrase
       input.form-control type="text" ng-model="app_data.passphrase"
 
     hr
-    .btn.btn-primary ng-click="decryptText()" Decrypt text with password
 
-
-
-  h4 Encrypted Text
-  pre = "{{message.encrypted_text}}"
-
-  h4 Decrypted Text
-  pre = "{{app_data.decrypted_text}}"
+    div ng-if="!app_data.decrypted_text"
+      .btn.btn-primary ng-click="decryptText()" Decrypt text with password
+    div ng-if="app_data.decrypted_text"
+      h4 Decrypted Text
+      pre = "{{app_data.decrypted_text}}"

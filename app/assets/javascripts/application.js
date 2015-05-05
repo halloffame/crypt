@@ -10,6 +10,7 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
+//= require crypto
 //= require jquery
 //  require jquery_ujs
 //= require angular
@@ -30,6 +31,8 @@ cryptApp.factory('Message', function($resource) {
 });
 
 cryptApp.controller('CryptCtrl', ['$scope', 'Message', function($scope, Message) {
+  $scope.angular_loaded = true;
+
   if(window.message_id) {
     $scope.message = Message.get({id: window.message_id}, function() {});
   } else {
