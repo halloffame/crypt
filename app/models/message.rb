@@ -1,7 +1,3 @@
-class Message
-  include Mongoid::Document
-  include Mongoid::Timestamps::Created
+class Message < ActiveRecord::Base
 
-  field :encrypted_text, type: String
-  field :expire_at, type: DateTime
 end
