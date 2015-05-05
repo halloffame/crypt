@@ -47,13 +47,13 @@
     div ng-if="newly_created"
       p
         span<> Share this link
-        pre = "http://crypt.dev/message/{{message.id}}"
+        pre = root_url + "message/{{message.id}}"
       p
         span<> With this passphrase
         pre = "{{app_data.passphrase}}"
       p
         span<> Or both at the same time
-        pre = 'http://crypt.dev/message/{{message.id}}#{{uriEncodedPassphrase()}}'
+        pre = root_url + 'message/{{message.id}}#{{uriEncodedPassphrase()}}'
 
     / Show this if you arrived through the message url
     div ng-if="!newly_created"
