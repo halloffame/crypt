@@ -41,9 +41,9 @@ cryptApp.config([
 ]);
 
 // Setup Message factory for creating and finding messages
-cryptApp.factory('Message', function($resource) {
+cryptApp.factory('Message', ['$resource', function($resource) {
   return $resource('/api/messages/:id', {id: '@id'});
-});
+}]);
 
 cryptApp.controller('CryptCtrl', ['$scope', '$location', 'Message', function($scope, $location, Message) {
   $scope.angular_loaded = true;  // This changes some css classes so we can show a landing screen before angular loads
