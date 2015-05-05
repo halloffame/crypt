@@ -4,11 +4,9 @@
 
 #cryptApp.container ng-app="cryptApp" ng-controller="CryptCtrl" ng-class="{angular_loaded: angular_loaded}"
 
-  h1 Message Crypt
+  h1 = link_to 'Message Crypt', root_url, target: "_self"
   p Simple and secure message encryption.
-  br
-
-
+  hr
 
   div ng-if="!message.id"
 
@@ -26,19 +24,29 @@
 
 
   div ng-if="message.id"
-    span<> Here is the link to share:
-    pre = "http://crypt.dev/message/{{message.id}}"
-    div
-      a ng-href="/message/{{message.id}}" = "http://crypt.dev/message/{{message.id}}"
 
-    .form-group
-      label Passphrase
-      input.form-control type="text" ng-model="app_data.passphrase"
+    / Show this right after creating a new message
+    div ng-if="newly_created"
+      p
+        span<> Share this link
+        pre = "http://crypt.dev/message/{{message.id}}"
+      p
+        span<> With this passphrase
+        pre = "{{app_data.passphrase}}"
+      p
+        span<> Or both at the same time
+        pre = 'http://crypt.dev/message/{{message.id}}#{{uriEncodedPassphrase()}}'
 
-    hr
+    / Show this if you arrived through the message url
+    div ng-if="!newly_created"
+      .form-group
+        label Passphrase
+        input.form-control type="text" ng-model="app_data.passphrase"
 
-    div ng-if="!app_data.decrypted_text"
-      .btn.btn-primary ng-click="decryptText()" Decrypt text with password
-    div ng-if="app_data.decrypted_text"
-      h4 Decrypted Text
-      pre = "{{app_data.decrypted_text}}"
+      hr
+
+      div ng-if="!app_data.decrypted_text && app_data.passphrase"
+        .btn.btn-primary ng-click="decryptText()" Use passphrase to decrypt text
+      div ng-if="app_data.decrypted_text"
+        h4 Decrypted Text
+        pre = "{{app_data.decrypted_text}}"

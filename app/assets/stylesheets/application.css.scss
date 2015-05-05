@@ -24,4 +24,10 @@
   &.angular_loaded {
     display: block;
   }
+
+
+  textarea {
+    min-height: 200px;
+    resize: vertical;
+  }
 }

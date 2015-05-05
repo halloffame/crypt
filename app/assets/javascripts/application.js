@@ -18,50 +18,88 @@
 //= require_tree .
 
 
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+}
+
+
+// Initialize the angular application
 cryptApp = angular.module('cryptApp', ['ngResource']);
 
+// Configure angular application
 cryptApp.config([
-  "$httpProvider", function($httpProvider) {
+  "$httpProvider", "$locationProvider", function($httpProvider, $locationProvider) {
+    // Rails expects a csrf token for form security. This tags it on to the request header.
     $httpProvider.defaults.headers.common['X-CSRF-Token'] = $('meta[name=csrf-token]').attr('content');
+
+    // Use normal routing instead of the hash routing
+    $locationProvider.html5Mode(true);
   }
 ]);
 
+// Setup Message factory for creating and finding messages
 cryptApp.factory('Message', function($resource) {
-  return $resource('/api/messages/:id'); // Note the full endpoint address
+  return $resource('/api/messages/:id');
 });
 
-cryptApp.controller('CryptCtrl', ['$scope', 'Message', function($scope, Message) {
-  $scope.angular_loaded = true;
+cryptApp.controller('CryptCtrl', ['$scope', '$location', 'Message', function($scope, $location, Message) {
+  $scope.angular_loaded = true;  // This changes some css classes so we can show a landing screen before angular loads
+  $scope.newly_created = false;  // Set to true after successfully creating a new message
+  $scope.app_data = {};
 
+
+  // Find or create $scope.message
   if(window.message_id) {
-    $scope.message = Message.get({id: window.message_id}, function() {});
+    $scope.angular_loaded = false; // Wait untill message successfully loads
+
+    // Query the api for the message with the given message id
+    $scope.message = Message.get({id: window.message_id}, function() {
+      // On success
+      $scope.angular_loaded = true;
+    }, function() {
+      // On error redirect to root url
+      alert('This message no longer exists');
+      window.location = '/'; // I actually want to force a page reload, otherwise I would use $location.path()
+    });
+
+    // Set passphrase if it is coming through in the location hash
+    if (location.hash) {
+      $scope.app_data.passphrase = decodeURI(location.hash.replace(/^#/, ''));
+    };
+
   } else {
+    // Create a new message object and generate a passphrase
     $scope.message = new Message();
+    $scope.app_data.passphrase = guid();
   }
 
-  $scope.app_data = {};
-  // $scope.plain_text = "";
-  // $scope.passphrase = "";
-  // $scope.encrypted_text = "";
-  // $scope.decrypted_text = "";
 
 
+  // Cache $scope to be used in the below functions
+  _scope = $scope;
+
+  // Gets triggered when you click the "Encrypt" button on the home page
   $scope.encryptText = function() {
-    _scope = this;
+    // TODO: Maybe we should require a password?
     _scope.message.encrypted_text = CryptoJS.AES.encrypt(_scope.app_data.plain_text, _scope.app_data.passphrase).toString();
 
     _scope.message.$save(function(m) {
-      _scope.message.id = m.id
-      // _scope.app_data.encrypted_text = m.encrypted_text;
-      // _scope.app_data.decrypted_text = CryptoJS.AES.decrypt(_scope.app_data.encrypted_text, _scope.app_data.passphrase).toString(CryptoJS.enc.Utf8);
+      _scope.message.id = m.id;
+      _scope.newly_created = true;
     });
-    // this.encrypted_text = CryptoJS.AES.encrypt(this.plain_text, this.passphrase).toString();
-    // this.decrypted_text = CryptoJS.AES.decrypt(this.encrypted_text, this.passphrase).toString(CryptoJS.enc.Utf8);
   };
 
+  // Gets triggered when you click the "Decrypt" button on the message page
   $scope.decryptText = function(){
-    _scope = this;
     _scope.app_data.decrypted_text = CryptoJS.AES.decrypt(_scope.message.encrypted_text, _scope.app_data.passphrase).toString(CryptoJS.enc.Utf8);
-  }
+    // TODO: Do something if password is wrong, right now it just doesn't do anything.
+  };
+
+  $scope.uriEncodedPassphrase = function() {
+    return encodeURI(_scope.app_data.passphrase);
+  };
 
 }]);
