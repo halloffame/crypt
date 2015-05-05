@@ -72,7 +72,10 @@ cryptApp.controller('CryptCtrl', ['$scope', '$location', 'Message', function($sc
 
   } else {
     // Create a new message object and generate a passphrase
-    $scope.message = new Message();
+    $scope.message = new Message({
+      expire_in_days: 3,
+      expire_count: 3
+    });
     $scope.app_data.passphrase = guid();
   }
 

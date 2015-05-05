@@ -18,12 +18,26 @@
       label Passphrase
       input.form-control type="text" ng-model="app_data.passphrase"
 
+    .form-group
+      label Expires in
+      .row
+        .col-sm-5
+          .input-group
+            input.form-control type="number" value="3" ng-model="message.expire_in_days"
+            .input-group-addon days
+        .col-sm-2.text-center OR
+        .col-sm-5
+          .input-group
+            input.form-control type="number" value="3" ng-model="message.expire_count"
+            .input-group-addon views
     hr
     .btn.btn-primary ng-click="encryptText()" Encrypt and Generate Link
 
 
 
   div ng-if="message.id"
+    .alert.alert-info
+      = "Expires in {{message.expires_in}} or {{message.expire_count}} more views"
 
     / Show this right after creating a new message
     div ng-if="newly_created"
