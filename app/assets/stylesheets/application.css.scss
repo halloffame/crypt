@@ -18,16 +18,20 @@
 @import "bootstrap";
 
 
-#cryptApp {
+#cryptApp { margin-bottom: 20px;
   display: none;
 
   &.angular_loaded {
     display: block;
   }
-
-
+  
   textarea {
     min-height: 200px;
     resize: vertical;
+  }
+  
+  @media (max-width: 500px) {
+    h1 { font-size: 26px; }
+    textarea { min-height: 150px; }
   }
 }
